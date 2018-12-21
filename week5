@@ -1,0 +1,46 @@
+#!/bin/bash
+#Recreate the script in Week 4, replacing the if statements used for the options with a case statement controlling the flow. Also add a menu that asks the user to choose to display the one of following elements from your pseudocode.
+# *  The host you are logged in on.
+# *  The date and time you last logged in, not including this time. (Try last -2 $LOGNAME (If this is the first time you have logged in to this system, it is acceptable for the output to indicate the last login is the current login session.))
+# *  How many local (non-environment) and environment variables you have defined. (This requires arithmetic.)
+# *  The directories in your search path, in the order they are searched, one-per-line.
+HOST="\nHost name: $(echo $HOSTNAME)";
+LAST_LOGIN="\nLast login:\n$(last -2 $LOGNAME | awk '{print $4,$5,$6}' | head -2)";
+DIRECTORIES_IN_PATH="\nThe number of directories in your search path: $(printenv PATH|tr : '\n'|wc -l | sed 's/[[:blank:]]//g')";
+NUMBER_OF_VARIABLES="\nNumber of local and environmental variables: $( ( set -o posix ; set ) | wc -l | sed 's/[[:blank:]]//g')";
+
+error(){
+	echo -e "$1 is an incorrection option\nPlease enter an option from 0-4"
+}
+
+#main
+
+clear;
+while true ; do
+	cat <<- EOF	
+	Please choose one of the following options:
+	1.  Display the name of the host you're logged into
+	2.  Display he date and time you last logged in, not including this time
+	3.  Display how many local and environmental variables are defined in your environment
+	4.  Display the directories in your search path, in the order they are searched
+	0.  Exit this program
+	EOF
+	echo -n "Enter an option: "
+	read -n1  userOption; 
+	optionLength=${#userOption};
+	if [ $optionLength  -ne 1 ] ; then
+		error "$userOption";
+	else
+		case "$userOption" in
+			0)      echo "Program terminated"; exit;;
+                	1)	echo -e "$HOST";;
+                	2)	echo -e "$LAST_LOGIN";;
+               		3)	echo -e "$NUMBER_OF_VARIABLES";;
+               		4)	echo -e "$DIRECTORIES_IN_PATH";;
+               		*) 	error $userOption;;
+        	esac
+	fi
+	sleep 2;
+	clear;
+done
+echo "Program terminated";
